@@ -2,14 +2,13 @@ import React from 'react';
 import { styled } from 'styled-components';
 
 interface InputProps {
-  isFocus: boolean;
-  setIsFocus: React.Dispatch<React.SetStateAction<boolean>>;
   value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
   onSearch: () => void;
+  onClick: (event: React.MouseEvent) => void;
 }
 
-function SearchInput({ isFocus, setIsFocus, value, setValue, onSearch }: InputProps) {
+function SearchInput({ value, onClick, setValue, onSearch }: InputProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setValue(newValue);
@@ -22,12 +21,11 @@ function SearchInput({ isFocus, setIsFocus, value, setValue, onSearch }: InputPr
   };
 
   return (
-    <Container>
+    <Container onClick={onClick}>
       <input
         type="text"
         placeholder="질환명을 입력해 주세요."
         value={value}
-        onFocus={() => setIsFocus(true)}
         onChange={handleInputChange}
         onKeyPress={handleInputKeyPress}
       />

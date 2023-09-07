@@ -1,5 +1,5 @@
 import { styled } from 'styled-components';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import SearchInput from '../components/SearchInput';
 import SearchResult from '../components/SearchResult';
 import { getSicks } from '../apis/apis';
@@ -10,7 +10,6 @@ function Main() {
   const [value, setValue] = useState<string>('');
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState<Sick[]>([]);
-  const ContainerRef = useRef<HTMLDivElement>(null);
 
   const debouncedKeyword = useDebounce(value);
 
@@ -25,21 +24,35 @@ function Main() {
 
   const handleSearch = () => {};
 
+  const openSearchBar = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsFocus(true);
+  };
+
+  const CloseSearcResult = () => {
+    setIsFocus(false);
+  };
+
   return (
-    <Container ref={ContainerRef} onClick={event => event.stopPropagation()}>
+    <Container onClick={() => CloseSearcResult()}>
       <Text>
         <p>국내 모든 임상시험 검색하고</p>
         <p>온라인으로 참여하기</p>
       </Text>
       <Search>
         <SearchInput
-          isFocus={isFocus}
-          setIsFocus={setIsFocus}
           value={value}
           setValue={setValue}
+          onClick={(e: React.MouseEvent) => openSearchBar(e)}
           onSearch={handleSearch}
         />
-        {isFocus && <SearchResult value={value} searchResults={searchResults} />}
+        {isFocus && (
+          <SearchResult
+            value={value}
+            searchResults={searchResults}
+            onClick={(e: React.MouseEvent) => openSearchBar(e)}
+          />
+        )}
       </Search>
     </Container>
   );
