@@ -1,20 +1,31 @@
-import React from 'react';
 import { styled } from 'styled-components';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import SearchInput from '../components/SearchInput';
 import SearchResult from '../components/SearchResult';
-import useFetch from '../hooks/useFetch';
+import { getSicks } from '../apis/apis';
+import { Sick } from '../types/types';
+import useDebounce from '../hooks/useDedounce';
 
 function Main() {
   const [value, setValue] = useState<string>('');
   const [isFocus, setIsFocus] = useState<boolean>(false);
+  const [searchResults, setSearchResults] = useState<Sick[]>([]);
+  const debouncedKeyword = useDebounce(value);
+  const ContainerRef = useRef<HTMLDivElement>(null);
 
-  const searchResults = useFetch({ isFocus, value });
+  useEffect(() => {
+    debouncedKeyword.trim() && CacheSearchResults();
+  }, [debouncedKeyword]);
+
+  const CacheSearchResults = async () => {
+    const searchResultData = await getSicks(debouncedKeyword);
+    setSearchResults(searchResultData);
+  };
 
   const handleSearch = () => {};
 
   return (
-    <Container>
+    <Container ref={ContainerRef} onClick={event => event.stopPropagation()}>
       <Text>
         <p>국내 모든 임상시험 검색하고</p>
         <p>온라인으로 참여하기</p>
@@ -55,6 +66,7 @@ const Text = styled.div`
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
+  margin-bottom: 30px;
 `;
 
 const Search = styled.div``;

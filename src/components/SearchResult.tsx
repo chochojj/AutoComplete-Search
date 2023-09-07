@@ -13,7 +13,7 @@ function SearchResult({ value, setValue, searchResults }: SearchResultProps) {
     <Container>
       {searchResults.length > 0 && value ? (
         <>
-          <p>{value}</p>
+          <Keyword>{value}</Keyword>
           <h2>추천 검색어</h2>
           <ul>
             {searchResults.map(keyword => (
@@ -32,5 +32,17 @@ export default SearchResult;
 
 const Container = styled.div`
   position: absolute;
+  width: 460px;
   height: 400px;
+  overflow-y: scroll;
+  background-color: white;
+  border-radius: 20px;
+  padding: 25px 25px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+`;
+
+const Keyword = styled.p`
+  margin-bottom: 3px;
+  color: navy;
+  font-weight: bold;
 `;

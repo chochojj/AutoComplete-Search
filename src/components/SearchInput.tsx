@@ -31,11 +31,35 @@ function SearchInput({ isFocus, setIsFocus, value, setValue, onSearch }: InputPr
         onChange={handleInputChange}
         onKeyPress={handleInputKeyPress}
       />
-      <button onClick={onSearch}></button>
+      <button onClick={onSearch}>검색</button>
     </Container>
   );
 }
 
 export default SearchInput;
 
-const Container = styled.div``;
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 7px;
+
+  input {
+    width: 380px;
+    height: 50px;
+    border-radius: 20px 0 0 20px;
+    border: none;
+    padding: 0 15px;
+    outline: none;
+  }
+
+  button {
+    width: 80px;
+    height: 50px;
+    border: none;
+    border-radius: 0 20px 20px 0;
+    background-color: #007be9;
+    color: white;
+    font-size: 18px;
+  }
+`;
