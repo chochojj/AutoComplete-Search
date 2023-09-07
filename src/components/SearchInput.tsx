@@ -15,8 +15,10 @@ function SearchInput({ isFocus, setIsFocus, value, setValue, onSearch }: InputPr
     setValue(newValue);
   };
 
-  const handleSearchClick = () => {
-    onSearch();
+  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onSearch();
+    }
   };
 
   return (
@@ -27,8 +29,9 @@ function SearchInput({ isFocus, setIsFocus, value, setValue, onSearch }: InputPr
         value={value}
         onFocus={() => setIsFocus(true)}
         onChange={handleInputChange}
-      ></input>
-      <button onClick={handleSearchClick}></button>
+        onKeyPress={handleInputKeyPress}
+      />
+      <button onClick={onSearch}></button>
     </Container>
   );
 }

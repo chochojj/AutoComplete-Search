@@ -1,50 +1,17 @@
+import React from 'react';
 import { styled } from 'styled-components';
-import { useState, useEffect } from 'react';
-import { getSicks } from '../apis/apis';
-import { Sick } from '../types/types';
-import useDebounce from '../hooks/useDebounce';
+import { useState } from 'react';
 import SearchInput from '../components/SearchInput';
 import SearchResult from '../components/SearchResult';
+import useFetch from '../hooks/useFetch';
 
 function Main() {
   const [value, setValue] = useState<string>('');
   const [isFocus, setIsFocus] = useState<boolean>(false);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [cache, setCache] = useState<{ [key: string]: { data: Sick[]; expiresAt: number } }>({});
 
-  const debouncedValue = useDebounce(value, 250);
+  const searchResults = useFetch({ isFocus, value });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (cache[debouncedValue] && cache[debouncedValue].expiresAt > Date.now()) {
-          setSearchResults(cache[debouncedValue].data);
-        } else {
-          const response = await getSicks(debouncedValue);
-          const newData = response.data;
-
-          setSearchResults(newData);
-          setCache({
-            ...cache,
-            [debouncedValue]: {
-              data: newData,
-              expiresAt: Date.now() + 300000,
-            },
-          });
-        }
-      } catch (error) {
-        console.error('데이터를 가져오는 도중 오류 발생:', error);
-      }
-    };
-
-    if (debouncedValue.trim() !== '') {
-      fetchData();
-    }
-  }, [debouncedValue, cache]);
-
-  const handleSearch = () => {
-    // 검색 버튼 클릭 또는 엔터 키 입력 시 실행할 함수
-  };
+  const handleSearch = () => {};
 
   return (
     <Container>
@@ -60,7 +27,9 @@ function Main() {
           setValue={setValue}
           onSearch={handleSearch}
         />
-        {isFocus && <SearchResult value={debouncedValue} searchResults={searchResults} />}
+        {isFocus && (
+          <SearchResult value={value} setValue={setValue} searchResults={searchResults} />
+        )}
       </Search>
     </Container>
   );
