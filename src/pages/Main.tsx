@@ -10,8 +10,9 @@ function Main() {
   const [value, setValue] = useState<string>('');
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState<Sick[]>([]);
-  const debouncedKeyword = useDebounce(value);
   const ContainerRef = useRef<HTMLDivElement>(null);
+
+  const debouncedKeyword = useDebounce(value);
 
   const CacheSearchResults = useCallback(async () => {
     const searchResultData = await getSicks(debouncedKeyword);
@@ -38,9 +39,7 @@ function Main() {
           setValue={setValue}
           onSearch={handleSearch}
         />
-        {isFocus && (
-          <SearchResult value={value} setValue={setValue} searchResults={searchResults} />
-        )}
+        {isFocus && <SearchResult value={value} searchResults={searchResults} />}
       </Search>
     </Container>
   );

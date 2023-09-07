@@ -6,10 +6,13 @@ const GlobalStyle = createGlobalStyle`
     text-decoration: none;
     color: #191919;
   }
+  
 html{
     height: 100%;
     overflow-x: hidden;
+    
 }
+
   body {
     margin: 0;
     padding: 0;
