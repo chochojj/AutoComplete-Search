@@ -8,7 +8,7 @@ export const setCacheData = async (url: string, keyword: string, data: Sick[]) =
   expireAt.setMinutes(expireAt.getMinutes() + EXPIRE_MINUTE);
   const headerOption = {
     headers: {
-      'Cache-Control': `max-age=${EXPIRE_MINUTE * 60}`,
+      Expires: expireAt.toUTCString(),
     },
   };
   const cacheResponse = new Response(JSON.stringify(data), headerOption);
