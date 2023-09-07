@@ -1,7 +1,11 @@
-import { Sick } from '../types/types';
 import { instance } from './instance';
 
-export const getSearchResult = (keyword: string) => {
-  console.info('calling api');
-  return instance.get<Sick[]>('/sick', { params: { q: keyword } });
+export const getSicks = async (value: string) => {
+  const { data } = await instance.get('/sick', {
+    params: {
+      q: value,
+    },
+  });
+
+  return { data };
 };
