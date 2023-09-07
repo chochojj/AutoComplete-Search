@@ -1,5 +1,5 @@
 import { styled } from 'styled-components';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import SearchInput from '../components/SearchInput';
 import SearchResult from '../components/SearchResult';
 import { getSicks } from '../apis/apis';
@@ -13,14 +13,14 @@ function Main() {
   const debouncedKeyword = useDebounce(value);
   const ContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    debouncedKeyword.trim() && CacheSearchResults();
-  }, [debouncedKeyword]);
-
-  const CacheSearchResults = async () => {
+  const CacheSearchResults = useCallback(async () => {
     const searchResultData = await getSicks(debouncedKeyword);
     setSearchResults(searchResultData);
-  };
+  }, [debouncedKeyword]);
+
+  useEffect(() => {
+    debouncedKeyword.trim() && CacheSearchResults();
+  }, [debouncedKeyword, CacheSearchResults]);
 
   const handleSearch = () => {};
 
