@@ -7,9 +7,10 @@ interface SearchResultProps {
   value: string;
   searchResults: Sick[];
   onClick: (event: React.MouseEvent) => void;
+  isFocus: boolean;
 }
 
-function SearchResult({ value, searchResults, onClick }: SearchResultProps) {
+function SearchResult({ value, searchResults, onClick, isFocus }: SearchResultProps) {
   const [focusedItemIndex, setFocusedItemIndex] = useState<number>(-1);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLUListElement>) => {
@@ -28,8 +29,10 @@ function SearchResult({ value, searchResults, onClick }: SearchResultProps) {
 
   const handleItemClick = (index: number, e: React.MouseEvent<HTMLLIElement>) => {
     onClick(e);
+    setFocusedItemIndex(index);
   };
 
+  console.info(focusedItemIndex);
   return (
     <Container onClick={onClick}>
       {searchResults.length > 0 && value ? (
@@ -46,7 +49,7 @@ function SearchResult({ value, searchResults, onClick }: SearchResultProps) {
           ))}
         </ul>
       ) : (
-        <div>검색어가 없습니다.</div>
+        <NoData>검색어가 없습니다.</NoData>
       )}
     </Container>
   );
@@ -57,11 +60,11 @@ export default SearchResult;
 const Container = styled.div`
   position: absolute;
   width: 460px;
-  height: 400px;
+  height: 350px;
   overflow-y: scroll;
   background-color: white;
   border-radius: 20px;
-  padding: 18px 15px;
+  padding: 18px 0px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -75,11 +78,15 @@ const Container = styled.div`
   }
 `;
 
+const NoData = styled.div`
+  padding: 0px 15px;
+`;
+
 const Item = styled.li`
   cursor: pointer;
   display: flex;
   gap: 6px;
-  padding: 7px;
+  padding: 7px 15px;
 
   ${props =>
     props.className === 'focused' &&

@@ -48,6 +48,7 @@ function Main() {
         />
         {isFocus && (
           <SearchResult
+            isFocus={isFocus}
             value={value}
             searchResults={searchResults}
             onClick={(e: React.MouseEvent) => openSearchBar(e)}
@@ -62,12 +63,13 @@ export default Main;
 
 const Container = styled.div`
   width: 100%;
-  height: 450px;
+  height: 100vh;
   background-color: #cae9ff;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding-bottom: 100px;
 `;
 
 const Text = styled.div`
