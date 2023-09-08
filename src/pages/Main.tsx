@@ -10,6 +10,7 @@ function Main() {
   const [value, setValue] = useState<string>('');
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState<Sick[]>([]);
+  const [focusedItemIndex, setFocusedItemIndex] = useState<number>(-1);
 
   const debouncedKeyword = useDebounce(value);
 
@@ -31,6 +32,25 @@ function Main() {
 
   const CloseSearcResult = () => {
     setIsFocus(false);
+    setFocusedItemIndex(-1);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLUListElement>) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (focusedItemIndex > 0) {
+        setFocusedItemIndex(focusedItemIndex - 1);
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (focusedItemIndex < searchResults.length - 1) {
+        setFocusedItemIndex(focusedItemIndex + 1);
+      }
+    }
+  };
+
+  const handleItemClick = (index: number) => {
+    setFocusedItemIndex(index);
   };
 
   return (
@@ -45,12 +65,17 @@ function Main() {
           setValue={setValue}
           onClick={(e: React.MouseEvent) => openSearchBar(e)}
           onSearch={handleSearch}
+          handleKeyDown={handleKeyDown}
         />
         {isFocus && (
           <SearchResult
             isFocus={isFocus}
             value={value}
             searchResults={searchResults}
+            focusedItemIndex={focusedItemIndex}
+            setFocusedItemIndex={setFocusedItemIndex}
+            handleItemClick={handleItemClick}
+            handleKeyDown={handleKeyDown}
             onClick={(e: React.MouseEvent) => openSearchBar(e)}
           />
         )}

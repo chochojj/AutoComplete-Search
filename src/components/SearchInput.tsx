@@ -6,9 +6,10 @@ interface InputProps {
   setValue: React.Dispatch<React.SetStateAction<string>>;
   onSearch: () => void;
   onClick: (event: React.MouseEvent) => void;
+  handleKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-function SearchInput({ value, onClick, setValue, onSearch }: InputProps) {
+function SearchInput({ value, onClick, setValue, onSearch, handleKeyDown }: InputProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setValue(newValue);
@@ -23,6 +24,7 @@ function SearchInput({ value, onClick, setValue, onSearch }: InputProps) {
   return (
     <Container onClick={onClick}>
       <input
+        onKeyDown={handleKeyDown}
         type="text"
         placeholder="질환명을 입력해 주세요."
         value={value}

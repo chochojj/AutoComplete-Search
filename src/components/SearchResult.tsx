@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BsSearch } from 'react-icons/bs';
 import { styled } from 'styled-components';
 import { Sick } from '../types/types';
@@ -8,40 +8,34 @@ interface SearchResultProps {
   searchResults: Sick[];
   onClick: (event: React.MouseEvent) => void;
   isFocus: boolean;
+  focusedItemIndex: number;
+  setFocusedItemIndex: React.Dispatch<React.SetStateAction<number>>;
+  handleItemClick: (index: number) => void;
+  handleKeyDown: (event: React.KeyboardEvent<HTMLUListElement>) => void;
 }
 
-function SearchResult({ value, searchResults, onClick, isFocus }: SearchResultProps) {
-  const [focusedItemIndex, setFocusedItemIndex] = useState<number>(-1);
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLUListElement>) => {
-    if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (focusedItemIndex > 0) {
-        setFocusedItemIndex(focusedItemIndex - 1);
-      }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (focusedItemIndex < searchResults.length - 1) {
-        setFocusedItemIndex(focusedItemIndex + 1);
-      }
-    }
-  };
-
-  const handleItemClick = (index: number, e: React.MouseEvent<HTMLLIElement>) => {
-    onClick(e);
-    setFocusedItemIndex(index);
-  };
+function SearchResult({
+  value,
+  searchResults,
+  onClick,
+  isFocus,
+  focusedItemIndex,
+  setFocusedItemIndex,
+  handleItemClick,
+  handleKeyDown,
+}: SearchResultProps) {
+  // useEffect(() => {}, []);
 
   console.info(focusedItemIndex);
   return (
     <Container onClick={onClick}>
       {searchResults.length > 0 && value ? (
-        <ul onKeyDown={handleKeyDown} tabIndex={0} autoFocus={true}>
+        <ul onKeyDown={handleKeyDown} tabIndex={0}>
           {searchResults.map((keyword, index) => (
             <Item
               key={keyword.sickCd}
               className={focusedItemIndex === index ? 'focused' : ''}
-              onClick={e => handleItemClick(index, e)}
+              onClick={() => handleItemClick(index)}
             >
               <SearchIcon />
               <span>{keyword.sickNm}</span>
