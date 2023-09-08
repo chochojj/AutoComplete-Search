@@ -9,7 +9,6 @@ interface SearchResultProps {
   onClick: (event: React.MouseEvent) => void;
   isFocus: boolean;
   focusedItemIndex: number;
-  setFocusedItemIndex: React.Dispatch<React.SetStateAction<number>>;
   handleItemClick: (index: number) => void;
   handleKeyDown: (event: React.KeyboardEvent<HTMLUListElement>) => void;
 }
@@ -20,13 +19,9 @@ function SearchResult({
   onClick,
   isFocus,
   focusedItemIndex,
-  setFocusedItemIndex,
   handleItemClick,
   handleKeyDown,
 }: SearchResultProps) {
-  // useEffect(() => {}, []);
-
-  console.info(focusedItemIndex);
   return (
     <Container onClick={onClick}>
       {searchResults.length > 0 && value ? (

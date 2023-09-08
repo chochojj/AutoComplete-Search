@@ -5,14 +5,16 @@ import SearchResult from '../components/SearchResult';
 import { getSicks } from '../apis/apis';
 import { Sick } from '../types/types';
 import useDebounce from '../hooks/useDedounce';
+import useKeyEvent from '../hooks/useKeyEvent';
 
 function Main() {
   const [value, setValue] = useState<string>('');
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState<Sick[]>([]);
-  const [focusedItemIndex, setFocusedItemIndex] = useState<number>(-1);
 
   const debouncedKeyword = useDebounce(value);
+  const { focusedItemIndex, setFocusedItemIndex, handleKeyDown, handleItemClick } =
+    useKeyEvent(searchResults);
 
   const CacheSearchResults = useCallback(async () => {
     const searchResultData = await getSicks(debouncedKeyword);
@@ -35,24 +37,6 @@ function Main() {
     setFocusedItemIndex(-1);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLUListElement>) => {
-    if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (focusedItemIndex > 0) {
-        setFocusedItemIndex(focusedItemIndex - 1);
-      }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (focusedItemIndex < searchResults.length - 1) {
-        setFocusedItemIndex(focusedItemIndex + 1);
-      }
-    }
-  };
-
-  const handleItemClick = (index: number) => {
-    setFocusedItemIndex(index);
-  };
-
   return (
     <Container onClick={() => CloseSearcResult()}>
       <Text>
@@ -73,7 +57,6 @@ function Main() {
             value={value}
             searchResults={searchResults}
             focusedItemIndex={focusedItemIndex}
-            setFocusedItemIndex={setFocusedItemIndex}
             handleItemClick={handleItemClick}
             handleKeyDown={handleKeyDown}
             onClick={(e: React.MouseEvent) => openSearchBar(e)}
