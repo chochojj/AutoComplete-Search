@@ -53,7 +53,6 @@ function Main() {
         />
         {isFocus && (
           <SearchResult
-            isFocus={isFocus}
             value={value}
             searchResults={searchResults}
             focusedItemIndex={focusedItemIndex}

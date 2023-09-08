@@ -7,7 +7,6 @@ interface SearchResultProps {
   value: string;
   searchResults: Sick[];
   onClick: (event: React.MouseEvent) => void;
-  isFocus: boolean;
   focusedItemIndex: number;
   handleItemClick: (index: number) => void;
   handleKeyDown: (event: React.KeyboardEvent<HTMLUListElement>) => void;
@@ -17,7 +16,6 @@ function SearchResult({
   value,
   searchResults,
   onClick,
-  isFocus,
   focusedItemIndex,
   handleItemClick,
   handleKeyDown,
