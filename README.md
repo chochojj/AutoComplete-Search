@@ -1,46 +1,142 @@
-# Getting Started with Create React App
+### 자동완성 검색창
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+검색을 실행하면 데이터에서 일치하는 요소를 추천검색어로 제공합니다
 
-## Available Scripts
+### 데모 영상
 
-In the project directory, you can run:
+| 검색 | 키보드로 요소 조회 | 
+|:-:| :-:|
+| ![검색](https://github.com/chochojj/AutoComplete-Search/assets/104323906/acf5661d-9e8c-4427-ba0b-9b123e6bbdc1) | ![키보드](https://github.com/chochojj/AutoComplete-Search/assets/104323906/08b3604c-c5cf-436a-a309-b8761ea65a9d)|
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 폴더 구조
+```
+📦src
+ ┣ 📂apis
+ ┃ ┣ 📜apis.ts
+ ┃ ┗ 📜instance.ts
+ ┣ 📂components
+ ┃ ┣ 📜SearchInput.tsx
+ ┃ ┗ 📜SearchResult.tsx
+ ┣ 📂constants
+ ┃ ┗ 📜path.ts
+ ┣ 📂hooks
+ ┃ ┣ 📜useDedounce.ts
+ ┃ ┗ 📜useKeyEvent.ts
+ ┣ 📂pages
+ ┃ ┗ 📜Main.tsx
+ ┣ 📂styles
+ ┃ ┗ 📜GlobalStyle.ts
+ ┣ 📂types
+ ┃ ┗ 📜types.ts
+ ┣ 📂utils
+ ┃ ┗ 📜cacheStorage.ts
+ ┣ 📜App.tsx
+ ┣ 📜index.css
+ ┣ 📜index.tsx
+ ┗ 📜react-app-env.d.ts
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `npm test`
+### 기능 설명
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### API 호출별로 로컬 캐싱 구현
+같은 키워드에 대해 서버에 중복요청이 가는 것을 방지하기 위해 캐싱 기능을 구현하였습니다
+- 캐싱 방식: 사용자의 검색 키워드를 캐시 스토리지에 저장하고, 이후 동일한 키워드 요청이 있을 때는 캐시된 결과를 사용합니다
+- 만료 시간: 캐시된 데이터는 5분 동안 유지되며 만료된 데이터는 삭제됩니다
 
-### `npm run build`
+```
+import { Sick } from '../types/types';
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+const EXPIRE_MINUTE = 5;
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+export const setCacheData = async (url: string, keyword: string, data: Sick[]) => {
+  const cacheStorage = await caches.open(url);
+  const expireAt = new Date();
+  expireAt.setMinutes(expireAt.getMinutes() + EXPIRE_MINUTE);
+  const headerOption = {
+    headers: {
+      Expires: expireAt.toUTCString(),
+    },
+  };
+  const cacheResponse = new Response(JSON.stringify(data), headerOption);
+  cacheStorage.put(keyword, cacheResponse);
+};
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+export const getCacheData = async (url: string, keyword: string) => {
+  const cacheStorage = await caches.open(url);
+  const cachedResponse = await cacheStorage.match(keyword);
 
-### `npm run eject`
+  if (!cachedResponse) return null;
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+  const expireHeader = cachedResponse.headers.get('Expires');
+  if (!expireHeader) return null;
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+  const ExpireTime = new Date(expireHeader);
+  const isExpired = new Date() > ExpireTime;
+  if (isExpired) return null;
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+  return cachedResponse;
+};
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+#### API 호출 횟수를 줄이기
+debounce을 사용하여 일정 시간의 입력값을 모아 처리하는 방법으로 각각의 키보드 이벤트마다 서버에 요청이 가는 것을 방지하였습니다
+- usedebounce hook 사용: 키워드를 입력받아 기본적으로 300ms 를 기다린 후 최종 입력값을 리턴하도록 구현하였습니다
+```
+import { useState, useEffect } from 'react';
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+const useDebounce = (value: string, delay = 300) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
+export default useDebounce;
+
+```
+  
+#### 키보드로 추천 검색어 이동
+키보드만의 위, 아래 화살표 버튼으로 추천 검색어 목록을 탐색할 수 있습니다
+- useKeyEvent hook 사용: 포커스된 자료의 인덱스를 관리하여 키보드 이벤트로 탐색할 수 있게 구현하였습니다
+```
+import React, { useState } from 'react';
+import { Sick } from '../types/types';
+
+function useKeyEvent(searchResults: Sick[]) {
+  const [focusedItemIndex, setFocusedItemIndex] = useState<number>(-1);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLUListElement>) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (focusedItemIndex > 0) {
+        setFocusedItemIndex(focusedItemIndex - 1);
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (focusedItemIndex < searchResults.length - 1) {
+        setFocusedItemIndex(focusedItemIndex + 1);
+      }
+    }
+  };
+
+  const handleItemClick = (index: number) => {
+    setFocusedItemIndex(index);
+  };
+
+  return { focusedItemIndex, setFocusedItemIndex, handleKeyDown, handleItemClick };
+}
+
+export default useKeyEvent;
+
+```
