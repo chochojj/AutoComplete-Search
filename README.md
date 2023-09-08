@@ -10,7 +10,7 @@
 
 | 검색 | 키보드로 요소 조회 | 
 |:-:| :-:|
-| | |
+| ![검색](https://github.com/chochojj/AutoComplete-Search/assets/104323906/acf5661d-9e8c-4427-ba0b-9b123e6bbdc1) | ![키보드](https://github.com/chochojj/AutoComplete-Search/assets/104323906/08b3604c-c5cf-436a-a309-b8761ea65a9d)|
 
 
 ### 폴더 구조
